@@ -1,0 +1,22 @@
+lockfileVersion: 5.4
+
+specifiers:
+  assertion-error: ^2.0.0
+  typescript: ^4.6.4
+
+dependencies:
+  assertion-error: 2.0.0
+  typescript: 4.6.4
+
+packages:
+
+  /assertion-error/2.0.0:
+    resolution: {integrity: sha512-Q0en67fcMTcBp1xn4DTYasTSKD4KAo86UhA6lr+c6neaz2gelKi5ILIqLcYl9JGWkGGbooYLs2iGQv7v1e83AA==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /typescript/4.6.4:
+    resolution: {integrity: sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false

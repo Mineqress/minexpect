@@ -74,6 +74,30 @@ class Expect<T> {
             (expectedValue, actualValue) => "Strict Equals: \nExpected \"" + expectedValue + "\n Actual: \"" + actualValue + "\"\n"
         )
     }
+
+    toBeLessThan(expectedValue?: T): Promise<void> | void | never {
+        if(typeof this.actualValue == "number"){
+            this.assertion = this.toBeLessThan;
+            return this.assert((expectedValue as unknown) as T, 
+                (expectedValue, actualValue) => ((actualValue as unknown) as number) < ((expectedValue as unknown) as number), 
+                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be less than ' + expectedValue
+            )
+        } else {
+            fail("toBeLessThan only makes sense on numbers")
+        }
+    }
+
+    toBeGreaterThan(expectedValue?: T): Promise<void> | void | never {
+        if(typeof this.actualValue == "number"){
+            this.assertion = this.toBeGreaterThan;
+            return this.assert((expectedValue as unknown) as T, 
+                (expectedValue, actualValue) => ((actualValue as unknown) as number) > ((expectedValue as unknown) as number), 
+                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be greater than ' + expectedValue
+            )
+        } else {
+            fail("toBeGreaterThan only makes sense on numbers")
+        }
+    }
     toContain(expectedValue?: T): Promise<void> | void | never {
         if(typeof this.actualValue == "string"){
             this.assertion = this.toContain;

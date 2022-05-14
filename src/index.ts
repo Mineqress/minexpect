@@ -11,7 +11,8 @@ class Expect<T> {
     private retry: (newValue: T) => void
     private assertion: (expectedValue?: T) => Promise<void> | void | never;
     private endAssertion : () => void | undefined;
-    constructor(actualValue: T | undefined | null, registerEvent: (retry: (newValue: T) => void) => void, unregisterEvent: (retry: (newValue: T) => void) => void) {
+    private timeout: number;
+    constructor(actualValue: T | undefined | null, registerEvent: (retry: (newValue: T) => void) => void, unregisterEvent: (retry: (newValue: T) => void) => void, timeout: number = 5000) {
         const retry = (newValue: T) => {
             this.actualValue = newValue;
             if(this.expectedValue != null){
@@ -22,6 +23,7 @@ class Expect<T> {
         registerEvent(retry);
         this.unregisterEvent = unregisterEvent;
         this.retry = retry;
+        this.timeout = timeout;
     }
     
     assert(expectedValue: T = this.expectedValue, 

@@ -1,7 +1,6 @@
 import { AssertionError } from "./assertion-error"
 
-function fail(message){
-    console.log("message")
+function fail(message): never {
     throw new AssertionError(message)
 }
 class Expect<T> {
@@ -10,7 +9,7 @@ class Expect<T> {
     private expectedValue?: T | undefined | null = null
     private unregisterEvent: (retry: (newValue: T) => void) => void;
     private retry: (newValue: T) => void
-    private assertion: (expectedValue?: T) => void;
+    private assertion: (expectedValue?: T) => Promise<void> | void | never;
     private endAssertion : () => void | undefined;
     constructor(actualValue: T | undefined | null, registerEvent: (retry: (newValue: T) => void) => void, unregisterEvent: (retry: (newValue: T) => void) => void) {
         const retry = (newValue: T) => {
@@ -25,7 +24,11 @@ class Expect<T> {
         this.retry = retry;
     }
     
-    assert(expectedValue: T = this.expectedValue, condition: (expectedValue: T, actualValue: T) => boolean, failMessageBuilder: (expectedValue: T, actualValue: T) => string){
+    assert(expectedValue: T = this.expectedValue, 
+        condition: (expectedValue: T, actualValue: T) => boolean, 
+        failMessageBuilder: (expectedValue: T, actualValue: T) => string)
+        : Promise<void> | void | never
+        {
             this.expectedValue = expectedValue
             if(!condition(expectedValue, this.actualValue)){
                 if(this.timeoutId == -1){
@@ -49,12 +52,38 @@ class Expect<T> {
             }
         
     }
-    toBe(expectedValue: T) {
+    /**
+     * Checks if the actual value is the expected value using == operator
+     * @param expectedValue The value that is expected
+     */
+    toBe(expectedValue?: T): Promise<void> | void | never {
         this.assertion = this.toBe;
         return this.assert(expectedValue, 
             (expectedValue, actualValue) => expectedValue == actualValue, 
             (expectedValue, actualValue) => "Expected \"" + expectedValue + "\n Actual: \"" + actualValue + "\""
         )
+    }
+    /**
+     * Checks if the actual value is the expected value using strict equals (===) operator
+     * @param expectedValue The value that is expected
+     */
+     toStrictEqual(expectedValue?: T): Promise<void> | void | never {
+        this.assertion = this.toStrictEqual;
+        return this.assert(expectedValue, 
+            (expectedValue, actualValue) => expectedValue === actualValue, 
+            (expectedValue, actualValue) => "Strict Equals: \nExpected \"" + expectedValue + "\n Actual: \"" + actualValue + "\"\n"
+        )
+    }
+    toContain(expectedValue?: T): Promise<void> | void | never {
+        if(typeof this.actualValue == "string"){
+            this.assertion = this.toContain;
+            return this.assert((expectedValue as unknown) as T, 
+                (expectedValue, actualValue) => ((actualValue as unknown) as string).includes((expectedValue as unknown) as string), 
+                (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
+            )
+        } else {
+            fail("toContain only makes sense on strings and arrays")
+        }
     }
 }
 

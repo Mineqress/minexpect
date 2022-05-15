@@ -38,7 +38,7 @@ class Expect<T> {
                         this.endAssertion = resolve;
                         this.timeoutId = setTimeout(() => {
                             fail(failMessageBuilder(expectedValue, this.actualValue))
-                        }, 2000)
+                        }, this.timeout)
                     })
                     
                 }

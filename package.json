@@ -1,6 +1,6 @@
 {
   "name": "@minepress/minexpect",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Expect library for minepress",
   "type": "commonjs",
   "typings": "dist/index.d.ts",
@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dist": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc"
   },
   "keywords": [],
   "author": "",

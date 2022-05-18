@@ -62,7 +62,7 @@ class Expect<T> {
         this.assertion = this.toBe;
         return this.assert(expectedValue, 
             (expectedValue, actualValue) => expectedValue == actualValue, 
-            (expectedValue, actualValue) => "Expected \"" + expectedValue + "\n Actual: \"" + actualValue + "\""
+            (expectedValue, actualValue) => "Expected \"" + expectedValue + "\"\n Actual: \"" + actualValue + "\""
         )
     }
     /**

@@ -1,11 +1,16 @@
-import { AssertionError } from "./assertion-error"
-
-function fail(message): never {
-    throw new AssertionError(message)
+import * as assert from "assert"
+function fail(options?: {
+    message?: string;
+    actual?: unknown;
+    expected?: unknown;
+    operator?: string;
+    stackStartFn?: Function;
+}): never {
+    throw new assert.AssertionError(options)
 }
 class Expect<T> {
     private actualValue: T | undefined | null
-    private timeoutId: number = -1;
+    private timeoutId: NodeJS.Timeout = null;
     private expectedValue?: T | undefined | null = null
     private unregisterEvent: (retry: (newValue: T) => void) => void;
     private retry: (newValue: T) => void
@@ -28,25 +33,30 @@ class Expect<T> {
     
     assert(expectedValue: T = this.expectedValue, 
         condition: (expectedValue: T, actualValue: T) => boolean, 
-        failMessageBuilder: (expectedValue: T, actualValue: T) => string)
+        failMessageBuilder: (expectedValue: T, actualValue: T) => string,
+        operator?: string)
         : Promise<void> | void | never
         {
             this.expectedValue = expectedValue
             if(!condition(expectedValue, this.actualValue)){
-                if(this.timeoutId == -1){
+                if(!this.timeoutId){
                     return new Promise<void>(resolve => {
                         this.endAssertion = resolve;
                         this.timeoutId = setTimeout(() => {
-                            fail(failMessageBuilder(expectedValue, this.actualValue))
+                            fail({
+                                expected: expectedValue,
+                                actual: this.actualValue,
+                                operator
+                            })
                         }, this.timeout)
                     })
                     
                 }
             } else {
                 this.unregisterEvent(this.retry);
-                if(this.timeoutId != -1){
+                if(!this.timeoutId){
                     clearTimeout(this.timeoutId);
-                    this.timeoutId = -1;
+                    this.timeoutId = null;
                 }
                 if(this.endAssertion){
                     this.endAssertion();
@@ -62,7 +72,8 @@ class Expect<T> {
         this.assertion = this.toBe;
         return this.assert(expectedValue, 
             (expectedValue, actualValue) => expectedValue == actualValue, 
-            (expectedValue, actualValue) => "Expected \"" + expectedValue + "\"\n Actual: \"" + actualValue + "\""
+            (expectedValue, actualValue) => "Expected \"" + expectedValue + "\"\n Actual: \"" + actualValue + "\"",
+            "=="
         )
     }
     /**
@@ -73,7 +84,8 @@ class Expect<T> {
         this.assertion = this.toStrictEqual;
         return this.assert(expectedValue, 
             (expectedValue, actualValue) => expectedValue === actualValue, 
-            (expectedValue, actualValue) => "Strict Equals: \nExpected \"" + expectedValue + "\n Actual: \"" + actualValue + "\"\n"
+            (expectedValue, actualValue) => "Strict Equals: \nExpected \"" + expectedValue + "\n Actual: \"" + actualValue + "\"\n",
+            "==="
         )
     }
 
@@ -82,10 +94,11 @@ class Expect<T> {
             this.assertion = this.toBeLessThan;
             return this.assert((expectedValue as unknown) as T, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) < ((expectedValue as unknown) as number), 
-                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be less than ' + expectedValue
+                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be less than ' + expectedValue,
+                "<"
             )
         } else {
-            fail("toBeLessThan only makes sense on numbers")
+            assert.fail("toBeLessThan only makes sense on numbers")
         }
     }
 
@@ -94,10 +107,11 @@ class Expect<T> {
             this.assertion = this.toBeGreaterThan;
             return this.assert((expectedValue as unknown) as T, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) > ((expectedValue as unknown) as number), 
-                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be greater than ' + expectedValue
+                (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be greater than ' + expectedValue,
+                ">"
             )
         } else {
-            fail("toBeGreaterThan only makes sense on numbers")
+            assert.fail("toBeGreaterThan only makes sense on numbers")
         }
     }
     toContain(expectedValue?: T): Promise<void> | void | never {
@@ -108,7 +122,7 @@ class Expect<T> {
                 (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
             )
         } else {
-            fail("toContain only makes sense on strings and arrays")
+            assert.fail("toContain only makes sense on strings and arrays")
         }
     }
 }

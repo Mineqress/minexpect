@@ -11,7 +11,8 @@
   "scripts": {
     "dist": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "tsc:w": "tsc --watch"
   },
   "keywords": [],
   "author": "",

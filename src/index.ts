@@ -46,7 +46,8 @@ class Expect<T> {
                             fail({
                                 expected: expectedValue,
                                 actual: this.actualValue,
-                                operator
+                                operator,
+                                message: failMessageBuilder(expectedValue, this.actualValue)
                             })
                         }, this.timeout)
                     })
@@ -92,7 +93,7 @@ class Expect<T> {
     toBeLessThan(expectedValue?: T): Promise<void> | void | never {
         if(typeof this.actualValue == "number"){
             this.assertion = this.toBeLessThan;
-            return this.assert((expectedValue as unknown) as T, 
+            return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) < ((expectedValue as unknown) as number), 
                 (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be less than ' + expectedValue,
                 "<"
@@ -105,7 +106,7 @@ class Expect<T> {
     toBeGreaterThan(expectedValue?: T): Promise<void> | void | never {
         if(typeof this.actualValue == "number"){
             this.assertion = this.toBeGreaterThan;
-            return this.assert((expectedValue as unknown) as T, 
+            return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) > ((expectedValue as unknown) as number), 
                 (expectedValue, actualValue) => 'Expected ' + actualValue + ' to be greater than ' + expectedValue,
                 ">"
@@ -117,8 +118,14 @@ class Expect<T> {
     toContain(expectedValue?: T): Promise<void> | void | never {
         if(typeof this.actualValue == "string"){
             this.assertion = this.toContain;
-            return this.assert((expectedValue as unknown) as T, 
+            return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as string).includes((expectedValue as unknown) as string), 
+                (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
+            )
+        } else if(this.actualValue instanceof Array){
+            this.assertion = this.toContain;
+            return this.assert(expectedValue, 
+                (expectedValue, actualValue) => ((actualValue as unknown) as Array<unknown>).includes(expectedValue), 
                 (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
             )
         } else {

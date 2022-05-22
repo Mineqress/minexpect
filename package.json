@@ -15,8 +15,8 @@
     "tsc:w": "tsc --watch"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Tiago Dinis <tiagodinis33@gmail.com>",
+  "license": "GPL-3.0",
   "dependencies": {
     "typescript": "^4.6.4"
   },

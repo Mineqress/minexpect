@@ -1,6 +1,6 @@
 {
   "name": "@minepress/minexpect",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Expect library for minepress",
   "type": "commonjs",
   "typings": "dist/index.d.ts",

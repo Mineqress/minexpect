@@ -55,7 +55,7 @@ class Expect<T> {
                 }
             } else {
                 this.unregisterEvent(this.retry);
-                if(!this.timeoutId){
+                if(this.timeoutId){
                     clearTimeout(this.timeoutId);
                     this.timeoutId = null;
                 }

@@ -14,7 +14,7 @@ class Expect<T> {
     private expectedValue?: T | undefined | null = null
     private unregisterEvent: (retry: (newValue: T) => void) => void;
     private retry: (newValue: T) => void
-    private assertion: (expectedValue?: T) => Promise<void> | void | never;
+    private assertion: (expectedValue?: any) => Promise<void> | void | never;
     private endAssertion : () => void | undefined;
     private timeout: number;
     constructor(actualValue: T | undefined | null, registerEvent: (retry: (newValue: T) => void) => void, unregisterEvent: (retry: (newValue: T) => void) => void, timeout: number = 5000) {
@@ -31,9 +31,9 @@ class Expect<T> {
         this.timeout = timeout;
     }
     
-    assert(expectedValue: T = this.expectedValue, 
-        condition: (expectedValue: T, actualValue: T) => boolean, 
-        failMessageBuilder: (expectedValue: T, actualValue: T) => string,
+    assert(expectedValue: any = this.expectedValue, 
+        condition: (expectedValue: any, actualValue: T) => boolean, 
+        failMessageBuilder: (expectedValue: any, actualValue: T) => string,
         operator?: string)
         : Promise<void> | void | never
         {
@@ -90,7 +90,7 @@ class Expect<T> {
         )
     }
 
-    toBeLessThan(expectedValue?: T): Promise<void> | void | never {
+    toBeLessThan(expectedValue?: number): Promise<void> | void | never {
         if(typeof this.actualValue == "number"){
             this.assertion = this.toBeLessThan;
             return this.assert(expectedValue, 
@@ -103,7 +103,7 @@ class Expect<T> {
         }
     }
 
-    toBeGreaterThan(expectedValue?: T): Promise<void> | void | never {
+    toBeGreaterThan(expectedValue?: number): Promise<void> | void | never {
         if(typeof this.actualValue == "number"){
             this.assertion = this.toBeGreaterThan;
             return this.assert(expectedValue, 
@@ -130,6 +130,17 @@ class Expect<T> {
             )
         } else {
             assert.fail("toContain only makes sense on strings and arrays")
+        }
+    }
+    toMatchRegex(regex: RegExp): Promise<void> | void | never {
+        if(typeof this.actualValue == "string"){
+            this.assertion = this.toMatchRegex;
+            return this.assert(regex.source, 
+                (regex: RegExp, actualValue) => regex.test(actualValue as unknown as string), 
+                (regex: RegExp, actualValue) => `Expected ${actualValue} to match ${regex.source}`
+            )
+        } else {
+            assert.fail(`Expected string type, found "${typeof this.actualValue}"`)
         }
     }
 }

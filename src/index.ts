@@ -91,7 +91,8 @@ class Expect<T> {
     }
 
     toBeLessThan(expectedValue?: number): Promise<void> | void | never {
-        if(typeof this.actualValue == "number"){
+
+        if(typeof this.actualValue == "number" && typeof expectedValue == "number"){
             this.assertion = this.toBeLessThan;
             return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) < ((expectedValue as unknown) as number), 
@@ -99,12 +100,12 @@ class Expect<T> {
                 "<"
             )
         } else {
-            assert.fail("toBeLessThan only makes sense on numbers")
+            throw "toBeLessThan only makes sense on numbers"
         }
     }
 
     toBeGreaterThan(expectedValue?: number): Promise<void> | void | never {
-        if(typeof this.actualValue == "number"){
+        if(typeof this.actualValue == "number" && typeof expectedValue == "number"){
             this.assertion = this.toBeGreaterThan;
             return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as number) > ((expectedValue as unknown) as number), 
@@ -112,24 +113,24 @@ class Expect<T> {
                 ">"
             )
         } else {
-            assert.fail("toBeGreaterThan only makes sense on numbers")
+            throw "toBeGreaterThan only makes sense on numbers"
         }
     }
     toContain(expectedValue?: T): Promise<void> | void | never {
-        if(typeof this.actualValue == "string"){
+        if(typeof this.actualValue == "string" && typeof expectedValue == "string"){
             this.assertion = this.toContain;
             return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as string).includes((expectedValue as unknown) as string), 
                 (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
             )
-        } else if(this.actualValue instanceof Array){
+        } else if(this.actualValue instanceof Array && expectedValue instanceof Array){
             this.assertion = this.toContain;
             return this.assert(expectedValue, 
                 (expectedValue, actualValue) => ((actualValue as unknown) as Array<unknown>).includes(expectedValue), 
                 (expectedValue, actualValue) => 'Expected "' + actualValue + '" to contain "' + expectedValue + '"' 
             )
         } else {
-            assert.fail("toContain only makes sense on strings and arrays")
+            throw "toContain only makes sense on strings and arrays"
         }
     }
     toMatchRegex(regex: RegExp): Promise<void> | void | never {
@@ -140,7 +141,7 @@ class Expect<T> {
                 (_, actualValue) => `Expected ${actualValue} to match ${regex}`
             )
         } else {
-            assert.fail(`Expected string type, found "${typeof this.actualValue}"`)
+            throw `Expected string type, found "${typeof this.actualValue}"`
         }
     }
 }

@@ -5,16 +5,25 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 jobs:
   lint-commits:
     name: Lint Commits
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.2
+      - name: Build
+        run: pnpm tsc
+      - name: Run tests
+        run: pnpm jest
+
       
         
       

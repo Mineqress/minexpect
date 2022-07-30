@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup pnpm
+        with: 
+          version: latest
         uses: pnpm/action-setup@v2.2.2
       - name: Build
         run: pnpm tsc

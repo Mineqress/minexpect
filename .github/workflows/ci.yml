@@ -21,6 +21,8 @@ jobs:
         with: 
           version: latest
         uses: pnpm/action-setup@v2.2.2
+      - name: Install dependencies
+        run: pnpm install
       - name: Build
         run: pnpm tsc
       - name: Run tests

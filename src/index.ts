@@ -40,15 +40,15 @@ class Expect<T> {
             this.expectedValue = expectedValue
             if(!condition(expectedValue, this.actualValue)){
                 if(!this.timeoutId){
-                    return new Promise<void>(resolve => {
+                    return new Promise<void>((resolve, reject) => {
                         this.endAssertion = resolve;
                         this.timeoutId = setTimeout(() => {
-                            fail({
+                            reject(new assert.AssertionError({
                                 expected: expectedValue,
                                 actual: this.actualValue,
                                 operator,
                                 message: failMessageBuilder(expectedValue, this.actualValue)
-                            })
+                            }))
                         }, this.timeout)
                     })
                     
@@ -136,8 +136,8 @@ class Expect<T> {
         if(typeof this.actualValue == "string"){
             this.assertion = this.toMatchRegex;
             return this.assert(regex.source, 
-                (regex: RegExp, actualValue) => regex.test(actualValue as unknown as string), 
-                (regex: RegExp, actualValue) => `Expected ${actualValue} to match ${regex.source}`
+                (_, actualValue) => (actualValue as unknown as string).match(regex) != null, 
+                (_, actualValue) => `Expected ${actualValue} to match ${regex}`
             )
         } else {
             assert.fail(`Expected string type, found "${typeof this.actualValue}"`)

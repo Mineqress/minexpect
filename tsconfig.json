@@ -2,7 +2,7 @@
   // Change this to match your project
   "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2015",
     "module": "CommonJS",
     // Generate d.ts files
     "declaration": true,
